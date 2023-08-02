@@ -50,7 +50,7 @@ function getBlocks(options) {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*Release:*\n<https://github.com/${options.repository}/releases/tag/${options.release.id}|${options.release.id}>\n\n*Release Date:*\n${options.release.date}\n\n`,
+        text: `*Release:*\n<https://github.com/${options.repository}/releases/tag/${options.release.id}|${options.release.id}>\n\n`,
       },
       accessory: {
         type: "image",
@@ -64,8 +64,6 @@ function getBlocks(options) {
 try {
   const channel = core.getInput("channel-id");
   const token = core.getInput("bot-token");
-
-  console.log(github.context);
 
   const client = new WebClient(token);
 
@@ -86,6 +84,8 @@ try {
   };
 
   const replaceTs = core.getInput("replace-message-ts");
+
+  console.log("Replace ts: ", replaceTs);
 
   const blocks = getBlocks(release);
   const text = `Hey ${release.alias}! Release ${release.release.id} is ${release.status}`;

@@ -18709,7 +18709,9 @@ function getBlocks(options) {
           options.alias
         } release <https://github.com/${options.repository}/releases/tag/${
           options.release.id
-        }|${options.release.id}> is *${options.status.toUpperCase()}*:`,
+        }|${options.release.id}> by *${
+          options.actor
+        }* is *${options.status.toUpperCase()}*:`,
       },
     },
     {
@@ -18734,7 +18736,7 @@ function getBlocks(options) {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*Release:*\n<https://github.com/${options.repository}/releases/tag/${options.release.id}|${options.release.id}>\n\n*Release Date:*\n${options.release.date}\n\n`,
+        text: `*Release:*\n<https://github.com/${options.repository}/releases/tag/${options.release.id}|${options.release.id}>\n\n`,
       },
       accessory: {
         type: "image",
@@ -18749,26 +18751,27 @@ try {
   const channel = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput("channel-id");
   const token = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput("bot-token");
 
-  console.log(_actions_github__WEBPACK_IMPORTED_MODULE_2__.context);
-
   const client = new _slack_web_api__WEBPACK_IMPORTED_MODULE_0__.WebClient(token);
 
   const release = {
     action: _actions_github__WEBPACK_IMPORTED_MODULE_2__.context.runId,
     alias: _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput("alias"),
+    actor: _actions_github__WEBPACK_IMPORTED_MODULE_2__.context.actor,
     commit: {
       ref: _actions_github__WEBPACK_IMPORTED_MODULE_2__.context.sha,
-      name: _actions_github__WEBPACK_IMPORTED_MODULE_2__.context.sha, // fix later
+      name: _actions_github__WEBPACK_IMPORTED_MODULE_2__.context.payload.head_commit.message,
     },
     release: {
-      id: _actions_github__WEBPACK_IMPORTED_MODULE_2__.context.ref,
+      id: _actions_github__WEBPACK_IMPORTED_MODULE_2__.context.ref.replace("refs/tags/", ""),
       date: new Date().toUTCString(),
     },
-    repository: `${_actions_github__WEBPACK_IMPORTED_MODULE_2__.context.repo.owner}/${_actions_github__WEBPACK_IMPORTED_MODULE_2__.context.repo.name}`,
+    repository: _actions_github__WEBPACK_IMPORTED_MODULE_2__.context.payload.repository.full_name,
     status: _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput("status"),
   };
 
   const replaceTs = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput("replace-message-ts");
+
+  console.log("Replace ts: ", replaceTs);
 
   const blocks = getBlocks(release);
   const text = `Hey ${release.alias}! Release ${release.release.id} is ${release.status}`;
