@@ -23,7 +23,9 @@ function getBlocks(options) {
           options.alias
         } release <https://github.com/${options.repository}/releases/tag/${
           options.release.id
-        }|${options.release.id}> is *${options.status.toUpperCase()}*:`,
+        }|${options.release.id}> by *${
+          options.actor
+        }* is *${options.status.toUpperCase()}*:`,
       },
     },
     {
@@ -70,15 +72,16 @@ try {
   const release = {
     action: github.context.runId,
     alias: core.getInput("alias"),
+    actor: github.context.actor,
     commit: {
       ref: github.context.sha,
-      name: github.context.sha, // fix later
+      name: github.context.payload.head_commit.message,
     },
     release: {
-      id: github.context.ref,
+      id: github.context.ref.replace("refs/tags/", ""),
       date: new Date().toUTCString(),
     },
-    repository: `${github.context.repo.owner}/${github.context.repo.name}`,
+    repository: github.context.payload.repository.full_name,
     status: core.getInput("status"),
   };
 
