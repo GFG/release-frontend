@@ -1,6 +1,6 @@
-import { WebClient } from "@slack/web-api";
-import core from "@actions/core";
-import github from "@actions/github";
+const { WebClient } = require("@slack/web-api");
+const core = require("@actions/core");
+const github = require("@actions/github");
 
 function getIcon(status) {
   switch (status) {
@@ -59,45 +59,54 @@ function getBlocks(options) {
   ];
 }
 
-try {
-  const channel = core.getInput("channel-id");
-  const token = core.getInput("bot-token");
+async function main() {
+  try {
+    const channel = core.getInput("channel-id");
+    const token = core.getInput("bot-token");
 
-  const client = new WebClient(token);
+    const client = new WebClient(token);
 
-  const release = {
-    action: github.context.runId,
-    alias: core.getInput("alias"),
-    commit: {
-      ref: github.context.sha,
-      name: github.context.sha, // fix later
-    },
-    release: {
-      id: github.context.ref,
-      date: new Date().toUTCString(),
-    },
-    repository: `${github.context.repo.owner}/${github.context.repo.name}`,
-    status: core.getInput("status"),
-  };
+    const release = {
+      action: github.context.runId,
+      alias: core.getInput("alias"),
+      commit: {
+        ref: github.context.sha,
+        name: github.context.sha, // fix later
+      },
+      release: {
+        id: github.context.ref,
+        date: new Date().toUTCString(),
+      },
+      repository: `${github.context.repo.owner}/${github.context.repo.name}`,
+      status: core.getInput("status"),
+    };
 
-  const replaceTs = core.Input("replace-message-ts");
+    const replaceTs = core.Input("replace-message-ts");
 
-  const blocks = getBlocks(release);
-  const text = `Hey ${release.alias}! Release ${release.release.id} is ${release.status}`;
+    const blocks = getBlocks(release);
+    const text = `Hey ${release.alias}! Release ${release.release.id} is ${release.status}`;
 
-  const result = replaceTs
-    ? await client.chat.update({
-        ts: replaceTs,
-        text,
-        blocks,
-      })
-    : await client.chat.postMessage({
-        channel,
-        blocks,
-        text,
-      });
+    const result = replaceTs
+      ? await client.chat.update({
+          ts: replaceTs,
+          text,
+          blocks,
+        })
+      : await client.chat.postMessage({
+          channel,
+          blocks,
+          text,
+        });
 
-  core.setOutput("ts", result.message.ts);
-} catch (err) {
-  core.setFailed(err);
+    core.setOutput("ts", result.message.ts);
+  } catch (err) {
+    core.setFailed(err);
+  }
 }
+
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    core.setFailed(err);
+    process.exit(1);
+  });
