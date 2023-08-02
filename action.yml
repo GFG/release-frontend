@@ -1,0 +1,24 @@
+name: "gfg/release-frontend"
+description: "SC Frontend Releases Slack Notifications"
+inputs:
+  channel-id:
+    description: Slack Channel ID
+    required: true
+  bot-token:
+    description: Slack Bot token
+    required: true
+  replace-message-ts:
+    description: Replace previously sent message
+    required: false
+  alias:
+    description: Alias to tag in the message
+    required: false
+  status:
+    description: Status to report (started, finished, failed)
+    required: true
+outputs:
+  ts: # id of output
+    description: TS of the generated message
+runs:
+  using: "node16"
+  main: "dist/index.js"
