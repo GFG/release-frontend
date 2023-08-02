@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "ncc build index.js --license licenses.txt",
-    "release": "git tag -d v1 && git tag -m v1 v1 && git push --tags -f"
+    "release": "git push && git tag -d v1 && git tag -m v1 v1 && git push --tags -f"
   },
   "keywords": [],
   "author": "",

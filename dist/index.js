@@ -18763,7 +18763,6 @@ try {
     },
     release: {
       id: _actions_github__WEBPACK_IMPORTED_MODULE_2__.context.ref.replace("refs/tags/", ""),
-      date: new Date().toUTCString(),
     },
     repository: _actions_github__WEBPACK_IMPORTED_MODULE_2__.context.payload.repository.full_name,
     status: _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput("status"),
@@ -18788,6 +18787,7 @@ try {
         text,
       });
 
+  _actions_core__WEBPACK_IMPORTED_MODULE_1__.notice("Setting the output: " + result.message.ts);
   _actions_core__WEBPACK_IMPORTED_MODULE_1__.setOutput("ts", result.message.ts);
 } catch (err) {
   _actions_core__WEBPACK_IMPORTED_MODULE_1__.setFailed(err);

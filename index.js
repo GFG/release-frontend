@@ -77,7 +77,6 @@ try {
     },
     release: {
       id: github.context.ref.replace("refs/tags/", ""),
-      date: new Date().toUTCString(),
     },
     repository: github.context.payload.repository.full_name,
     status: core.getInput("status"),
@@ -102,6 +101,7 @@ try {
         text,
       });
 
+  core.notice("Setting the output: " + result.message.ts);
   core.setOutput("ts", result.message.ts);
 } catch (err) {
   core.setFailed(err);
